@@ -8,6 +8,7 @@ import com.sdm.Authentication.auth.service.AuthService;
 import com.sdm.Authentication.auth.util.JwtUtil;
 import com.sdm.Authentication.entity.User;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +19,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +30,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
+@Validated
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
@@ -81,7 +84,7 @@ public class AuthController {
 
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUpUser(@RequestBody SignupRequest signupRequest){
+    public ResponseEntity<?> signUpUser(@Valid @RequestBody SignupRequest signupRequest){
         if(authService.hasUserWithEmail(signupRequest.getEmail())){
             return new ResponseEntity<>("User already exists", HttpStatus.NOT_ACCEPTABLE);
         }

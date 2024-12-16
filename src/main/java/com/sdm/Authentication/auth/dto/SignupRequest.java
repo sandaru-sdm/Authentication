@@ -1,10 +1,15 @@
 package com.sdm.Authentication.auth.dto;
 
-import lombok.Data;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public class SignupRequest {
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is mandatory")
     private String email;
+    @NotBlank(message = "Password is mandatory")
     private String password;
+    @NotBlank(message = "Name is mandatory")
     private String name;
 
     public String getEmail() {
