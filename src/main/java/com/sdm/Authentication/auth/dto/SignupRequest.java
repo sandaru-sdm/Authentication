@@ -11,6 +11,7 @@ public class SignupRequest {
     private String password;
     @NotBlank(message = "Name is mandatory")
     private String name;
+    private String activationCode;
 
     public String getEmail() {
         return email;
@@ -34,5 +35,13 @@ public class SignupRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getActivationCode() {
+        return activationCode;
+    }
+
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
     }
 }

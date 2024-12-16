@@ -20,10 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -52,6 +49,8 @@ public class AuthController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
+
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
@@ -67,16 +66,21 @@ public class AuthController {
         final String jwt = jwtUtil.generateToken(userDetails.getUsername());
 
         if (optionalUser.isPresent()) {
-            JSONObject response = new JSONObject();
-            try {
-                response.put("userId", optionalUser.get().getId());
-                response.put("token", jwt);
-                response.put("tokenType", "Bearer");
-            } catch (JSONException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while creating response.");
-            }
 
-            return ResponseEntity.ok(response.toString());
+            if (optionalUser.get().isActivated()) {
+                JSONObject response = new JSONObject();
+                try {
+                    response.put("userId", optionalUser.get().getId());
+                    response.put("token", jwt);
+                    response.put("tokenType", "Bearer");
+                } catch (JSONException e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while creating response.");
+                }
+
+                return ResponseEntity.ok(response.toString());
+            }else {
+                return ResponseEntity.badRequest().body("Account is not activated. Check your email.");
+            }
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found.");
@@ -92,5 +96,18 @@ public class AuthController {
         UserDto userDto = authService.createUser(signupRequest);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
+
+    @GetMapping("/activate")
+    public ResponseEntity<?> activateAccount(@RequestParam("code") String code) {
+        User user = userRepository.findByActivationCode(code)
+                .orElseThrow(() -> new RuntimeException("Invalid activation code!"));
+
+        user.setActivated(true);
+        user.setActivationCode(null); // Clear the activation code
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Account activated successfully! You can now log in.");
+    }
+
 }
 

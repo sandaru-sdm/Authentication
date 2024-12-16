@@ -23,6 +23,10 @@ public class User implements UserDetails, Principal {
     private String password;
     private String name;
 
+    private boolean isActivated = false;
+
+    private String activationCode;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority("USER"));
@@ -85,5 +89,21 @@ public class User implements UserDetails, Principal {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isActivated() {
+        return isActivated;
+    }
+
+    public void setActivated(boolean activated) {
+        isActivated = activated;
+    }
+
+    public String getActivationCode() {
+        return activationCode;
+    }
+
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
     }
 }

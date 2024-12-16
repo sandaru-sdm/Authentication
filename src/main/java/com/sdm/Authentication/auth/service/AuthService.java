@@ -16,9 +16,15 @@ public class AuthService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AuthService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    private final ActivationService activationService;
+
+    private final EmailService emailService;
+
+    public AuthService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ActivationService activationService, EmailService emailService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.activationService = activationService;
+        this.emailService = emailService;
     }
 
     public UserDto createUser(SignupRequest signupRequest){
@@ -26,12 +32,20 @@ public class AuthService {
         user.setEmail(signupRequest.getEmail());
         user.setName(signupRequest.getName());
         user.setPassword(new BCryptPasswordEncoder().encode(signupRequest.getPassword()));
+        String activationCode = activationService.generateActivationCode();
+        user.setActivationCode(activationCode);
         User createUser = userRepository.save(user);
 
         UserDto userDto = new UserDto();
         userDto.setId(createUser.getId());
         userDto.setEmail(createUser.getEmail());
         userDto.setName(createUser.getName());
+        userDto.setActivationCode(createUser.getActivationCode());
+        // Send activation email
+
+        emailService.sendActivationEmail(userDto.getEmail(), activationCode);
+
+
         return userDto;
     }
 

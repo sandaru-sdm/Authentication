@@ -6,6 +6,7 @@ public class UserDto {
     private Long id;
     private String email;
     private String name;
+    private String activationCode;
 
     public Long getId() {
         return id;
@@ -29,5 +30,13 @@ public class UserDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getActivationCode() {
+        return activationCode;
+    }
+
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
     }
 }
