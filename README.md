@@ -1,6 +1,6 @@
 # Authentication Service
 
-This is a **Spring Boot** project that provides user authentication functionality using JWT (JSON Web Tokens). It includes sign-up and login APIs with JWT-based security.
+This is a **Spring Boot** project that provides user authentication functionality using JWT (JSON Web Tokens). It includes sign-up, login, account activation, and additional user-related APIs with JWT-based security.
 
 ---
 
@@ -39,13 +39,33 @@ jwt.secret=<YOUR_SECRET_KEY>
 - The **JWT Secret Key** should be a random string of at least 32 characters (e.g., a base64-encoded string).
 - Example of a strong secret key: `jSHd7238Kj21$@Ndjs82Gjs28!@jLkSd`.
 
-To generate a random secure key, you can use [online tools](https://randomkeygen.com/) or libraries.
+---
+
+### Email Configuration
+For sending emails (e.g., activation and password reset), add the following SMTP settings to `application.properties`:
+
+```properties
+# Email Configuration
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=<YOUR_EMAIL>
+spring.mail.password=<YOUR_APP_PASSWORD>
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.connectiontimeout=5000
+spring.mail.properties.mail.smtp.timeout=5000
+spring.mail.properties.mail.smtp.writetimeout=5000
+```
+
+Replace:
+- `<YOUR_EMAIL>`: Your email address.
+- `<YOUR_APP_PASSWORD>`: The app-specific password for your email.
 
 ---
 
 ## 2. API Documentation
 
-### Sign-Up API
+### 2.1 Sign-Up API
 
 **Endpoint:**
 ```
@@ -64,11 +84,36 @@ POST http://localhost:8080/api/auth/sign-up
 **Response:**
 ```json
 {
-  "message": "User registered successfully"
+  "message": "User registered! Check your email to activate your account."
 }
 ```
 
-### Authentication (Login) API
+---
+
+### 2.2 Activate Account API
+
+**Endpoint:**
+```
+GET http://localhost:8080/api/auth/activate?code=<ACTIVATION_CODE>
+```
+
+**Response:**
+```json
+{
+  "message": "Account activated successfully!"
+}
+```
+
+If the activation code is invalid or expired:
+```json
+{
+  "error": "Invalid or expired activation code."
+}
+```
+
+---
+
+### 2.3 Authentication (Login) API
 
 **Endpoint:**
 ```
@@ -88,16 +133,8 @@ POST http://localhost:8080/api/auth/authenticate
 {
   "tokenType": "Bearer",
   "userId": 3,
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkaWxzaGFuQGdtYWlsLmNvbSIsImlhdCI6MTczNDM0OTA5OSwiZXhwIjoxNzM0NDM1NDk5fQ.L1YsxXlGuMjUH2YyWGitPk0Yitmii-Ku4bmdaalA7kE"
+  "token": "<JWT_TOKEN>"
 }
-```
-
-- Replace `token` with the returned JWT string.
-- This token must be included in the `Authorization` header for accessing protected endpoints.
-
-Example Header for Protected Requests:
-```http
-Authorization: Bearer <JWT_TOKEN>
 ```
 
 ---
@@ -109,7 +146,7 @@ Authorization: Bearer <JWT_TOKEN>
    git clone https://github.com/sandaru-sdm/Authentication.git
    cd Authentication
    ```
-2. **Configure the `application.properties` file** with your database and JWT secret key as described above.
+2. **Configure the `application.properties` file** with your database, JWT secret key, and email settings as described above.
 3. **Build the Project** using Maven:
    ```bash
    mvn clean install
@@ -127,30 +164,99 @@ Authorization: Bearer <JWT_TOKEN>
 
 ## 4. Additional Notes
 
-- **Dependencies:**
-  - Spring Boot Web
-  - Spring Boot Data JPA
-  - MySQL Connector
-  - JWT (io.jsonwebtoken)
-- **Error Handling:**
-  - Proper error responses are implemented for invalid credentials or user already exists.
+### Dependencies:
+- **Spring Boot Web**
+- **Spring Boot Data JPA**
+- **Spring Boot Mail**
+- **MySQL Connector**
+- **JWT (io.jsonwebtoken)**
+- **BCrypt for Password Hashing**
+
+### Error Handling:
+- Proper error responses are implemented for:
+  - Invalid credentials
+  - User already exists
+  - Missing or invalid JWT tokens
+  - Invalid activation codes
+
+### Example Error Response:
+```json
+{
+  "error": "Invalid credentials",
+  "timestamp": "2024-07-12T12:34:56.789Z"
+}
+```
 
 ---
 
 ## 5. Security Considerations
 
 - Use a strong **JWT secret key** and do not expose it publicly.
-- Use HTTPS in production to secure requests.
-- Store passwords securely using hashing algorithms like BCrypt (already implemented).
+- Use **HTTPS** in production to secure API requests.
+- Store passwords securely using **BCrypt** hashing (already implemented).
+- Keep the **email username and password** secure. Use environment variables or secret vaults in production.
 
 ---
 
 ## 6. Tools Used
 
-- **Spring Boot**
+- **Spring Boot** for application development
 - **JWT** for authentication
+- **MySQL** for the database
 - **Maven** for dependency management
-- **MySQL** for database
+- **Postman** for testing APIs
+
+---
+
+## 7. Future Improvements
+
+### 2.4 Get User Details (Protected)
+
+**Endpoint:**
+```
+GET http://localhost:8080/api/auth/user/{id}
+```
+
+**Headers:**
+```http
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Response:**
+```json
+{
+  "id": 3,
+  "name": "testuser",
+  "email": "test@example.com"
+}
+```
+
+### 2.5 Password Reset API (Email)
+
+**Endpoint:**
+```
+POST http://localhost:8080/api/auth/password-reset
+```
+
+**Request Body:**
+```json
+{
+  "email": "test@example.com"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Password reset email sent."
+}
+```
+---
+
+## 8. Contact
+For queries, issues, or suggestions, contact me at:
+- **Email**: `maduhansadilshan@gmail.com`
+- **GitHub**: [sandaru-sdm](https://github.com/sandaru-sdm)
 
 ---
 
