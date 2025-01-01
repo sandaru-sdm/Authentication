@@ -1,65 +1,40 @@
 # Authentication Service
 
-This is a **Spring Boot** project that provides user authentication functionality using JWT (JSON Web Tokens). It includes sign-up, login, account activation, and additional user-related APIs with JWT-based security.
+This is a **Spring Boot** project that provides user authentication functionality using JWT (JSON Web Tokens). It includes sign-up, login, account activation, password reset, and additional user-related APIs with JWT-based security.
 
 ---
 
 ## 1. Configuration
 
-### Database Configuration
-Update the following fields in the `src/main/resources/application.properties` file with your database credentials:
+### Environment Variables
+Create a `.env` file in the root directory with the following configuration:
 
 ```properties
 # Database Configuration
-spring.datasource.url=jdbc:mysql://localhost:3306/<DATABASE_NAME>
-spring.datasource.username=<DATABASE_USERNAME>
-spring.datasource.password=<DATABASE_PASSWORD>
+DATASOURCE_URL=jdbc:mysql://localhost:3307/auth
+DATASOURCE_USER=YOUR_DATASOURCE_USER
+DATASOURCE_PASSWORD=YOUR_DATASOURCE_PASSWORD
 
-# Hibernate Configuration
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+# JWT Configuration
+JWT_SECRET_KEY=YOUR_JWT_SECRET_KEY
+
+# Email Configuration
+MAIL_USERNAME=YOUR_EMAIL
+MAIL_PASSWORD=YOUR_EMAIL_APP_PASSWORD
+
+# URL Configuration
+FRONTEND_URL=http://localhost:4200/login
+BASE_URL=http://localhost:8080/api/auth/
 ```
 
-Replace:
-- `<DATABASE_NAME>`: Name of your MySQL database.
-- `<DATABASE_USERNAME>`: Your MySQL database username.
-- `<DATABASE_PASSWORD>`: Your MySQL database password.
-
----
+### Database Configuration
+The application will use the database configuration from your `.env` file. Make sure your MySQL server is running and accessible with the provided credentials.
 
 ### JWT Secret Key
-Set the JWT secret key in the `application.properties` file:
-
-```properties
-# JWT Secret Key
-jwt.secret=<YOUR_SECRET_KEY>
-```
-
-- The **JWT Secret Key** should be a random string of at least 32 characters (e.g., a base64-encoded string).
-- Example of a strong secret key: `jSHd7238Kj21$@Ndjs82Gjs28!@jLkSd`.
-
----
+The JWT secret key is now configured through the `.env` file. Make sure to use a strong secret key in production.
 
 ### Email Configuration
-For sending emails (e.g., activation and password reset), add the following SMTP settings to `application.properties`:
-
-```properties
-# Email Configuration
-spring.mail.host=smtp.gmail.com
-spring.mail.port=587
-spring.mail.username=<YOUR_EMAIL>
-spring.mail.password=<YOUR_APP_PASSWORD>
-spring.mail.properties.mail.smtp.auth=true
-spring.mail.properties.mail.smtp.starttls.enable=true
-spring.mail.properties.mail.smtp.connectiontimeout=5000
-spring.mail.properties.mail.smtp.timeout=5000
-spring.mail.properties.mail.smtp.writetimeout=5000
-```
-
-Replace:
-- `<YOUR_EMAIL>`: Your email address.
-- `<YOUR_APP_PASSWORD>`: The app-specific password for your email.
+Email settings are now managed through the `.env` file. The application uses these credentials for sending activation and password reset emails.
 
 ---
 
@@ -104,13 +79,6 @@ GET http://localhost:8080/api/auth/activate?code=<ACTIVATION_CODE>
 }
 ```
 
-If the activation code is invalid or expired:
-```json
-{
-  "error": "Invalid or expired activation code."
-}
-```
-
 ---
 
 ### 2.3 Authentication (Login) API
@@ -139,6 +107,72 @@ POST http://localhost:8080/api/auth/authenticate
 
 ---
 
+### 2.4 Forgot Password API
+
+**Endpoint:**
+```
+POST http://localhost:8080/api/auth/forgot-password
+```
+
+**Request Body:**
+```json
+{
+  "email": "test@example.com"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Password reset link has been sent to your email."
+}
+```
+
+---
+
+### 2.5 Reset Password API
+
+**Endpoint:**
+```
+POST http://localhost:8080/api/auth/reset-password?token=<RESET_TOKEN>
+```
+
+Example URL:
+```
+http://localhost:8080/api/auth/reset-password?token=29190c5e-55cf-4f49-93f0-f2d8e81245c7
+```
+
+**Request Body:**
+```json
+{
+  "email": "test@example.com",
+  "newPassword": "newPassword123",
+  "confirmNewPassword": "newPassword123"
+}
+```
+
+**Success Response:**
+```json
+{
+  "message": "Password has been successfully reset."
+}
+```
+
+**Error Response:**
+```json
+{
+  "error": "Password and Confirm Password Not Match."
+}
+```
+or
+```json
+{
+  "error": "Invalid or expired token."
+}
+```
+
+---
+
 ## 3. How to Run
 
 1. **Clone the Repository**:
@@ -146,7 +180,7 @@ POST http://localhost:8080/api/auth/authenticate
    git clone https://github.com/sandaru-sdm/Authentication.git
    cd Authentication
    ```
-2. **Configure the `application.properties` file** with your database, JWT secret key, and email settings as described above.
+2. **Create and configure the `.env` file** as described in the Configuration section.
 3. **Build the Project** using Maven:
    ```bash
    mvn clean install
@@ -178,6 +212,8 @@ POST http://localhost:8080/api/auth/authenticate
   - User already exists
   - Missing or invalid JWT tokens
   - Invalid activation codes
+  - Invalid password reset tokens
+  - Password mismatch during reset
 
 ### Example Error Response:
 ```json
@@ -195,6 +231,7 @@ POST http://localhost:8080/api/auth/authenticate
 - Use **HTTPS** in production to secure API requests.
 - Store passwords securely using **BCrypt** hashing (already implemented).
 - Keep the **email username and password** secure. Use environment variables or secret vaults in production.
+- Password reset tokens expire after 1 hour for security.
 
 ---
 
@@ -208,52 +245,7 @@ POST http://localhost:8080/api/auth/authenticate
 
 ---
 
-## 7. Future Improvements
-
-### 2.4 Get User Details (Protected)
-
-**Endpoint:**
-```
-GET http://localhost:8080/api/auth/user/{id}
-```
-
-**Headers:**
-```http
-Authorization: Bearer <JWT_TOKEN>
-```
-
-**Response:**
-```json
-{
-  "id": 3,
-  "name": "testuser",
-  "email": "test@example.com"
-}
-```
-
-### 2.5 Password Reset API (Email)
-
-**Endpoint:**
-```
-POST http://localhost:8080/api/auth/password-reset
-```
-
-**Request Body:**
-```json
-{
-  "email": "test@example.com"
-}
-```
-
-**Response:**
-```json
-{
-  "message": "Password reset email sent."
-}
-```
----
-
-## 8. Contact
+## 7. Contact
 For queries, issues, or suggestions, contact me at:
 - **Email**: `maduhansadilshan@gmail.com`
 - **GitHub**: [sandaru-sdm](https://github.com/sandaru-sdm)
