@@ -4,8 +4,6 @@ import com.sdm.Authentication.auth.dto.SignupRequest;
 import com.sdm.Authentication.auth.dto.UserDto;
 import com.sdm.Authentication.auth.repository.UserRepository;
 import com.sdm.Authentication.entity.User;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,11 +43,10 @@ public class AuthService {
 
         emailService.sendActivationEmail(userDto.getEmail(), activationCode);
 
-
         return userDto;
     }
 
     public Boolean hasUserWithEmail(String email){
-        return userRepository.findFirstByEmail(email).isPresent();
+        return userRepository.findByEmail(email).isPresent();
     }
 }
