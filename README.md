@@ -1,12 +1,14 @@
-# Authentication Service
+# 🔐 Authentication Service
 
 This is a **Spring Boot** project that provides user authentication functionality using JWT (JSON Web Tokens). It includes sign-up, login, account activation, password reset, and additional user-related APIs with JWT-based security.
 
 ---
 
-## 1. Configuration
+---
 
-### Environment Variables
+## ⚙️ 1. Configuration
+
+### 🌱 Environment Variables
 Create a `.env` file in the root directory with the following configuration:
 
 ```properties
@@ -27,20 +29,20 @@ FRONTEND_URL=http://localhost:4200/login
 BASE_URL=http://localhost:8080/api/auth/
 ```
 
-### Database Configuration
+### 🗄️ Database Configuration
 The application will use the database configuration from your `.env` file. Make sure your MySQL server is running and accessible with the provided credentials.
 
-### JWT Secret Key
+### 🔑 JWT Secret Key
 The JWT secret key is now configured through the `.env` file. Make sure to use a strong secret key in production.
 
-### Email Configuration
+### 📧 Email Configuration
 Email settings are now managed through the `.env` file. The application uses these credentials for sending activation and password reset emails.
 
 ---
 
-## 2. API Documentation
+## 📚 2. API Documentation
 
-### 2.1 Sign-Up API
+### 📝 2.1 Sign-Up API
 
 **Endpoint:**
 ```
@@ -65,7 +67,7 @@ POST http://localhost:8080/api/auth/sign-up
 
 ---
 
-### 2.2 Activate Account API
+### ✅ 2.2 Activate Account API
 
 **Endpoint:**
 ```
@@ -81,7 +83,7 @@ GET http://localhost:8080/api/auth/activate?code=<ACTIVATION_CODE>
 
 ---
 
-### 2.3 Authentication (Login) API
+### 🔓 2.3 Authentication (Login) API
 
 **Endpoint:**
 ```
@@ -107,7 +109,7 @@ POST http://localhost:8080/api/auth/authenticate
 
 ---
 
-### 2.4 Forgot Password API
+### 🤔 2.4 Forgot Password API
 
 **Endpoint:**
 ```
@@ -130,7 +132,7 @@ POST http://localhost:8080/api/auth/forgot-password
 
 ---
 
-### 2.5 Reset Password API
+### 🔄 2.5 Reset Password API
 
 **Endpoint:**
 ```
@@ -173,7 +175,7 @@ or
 
 ---
 
-## 3. How to Run
+## 🚀 3. How to Run
 
 1. **Clone the Repository**:
    ```bash
@@ -196,9 +198,9 @@ or
 
 ---
 
-## 4. Additional Notes
+## 📝 4. Additional Notes
 
-### Dependencies:
+### 📦 Dependencies:
 - **Spring Boot Web**
 - **Spring Boot Data JPA**
 - **Spring Boot Mail**
@@ -206,7 +208,7 @@ or
 - **JWT (io.jsonwebtoken)**
 - **BCrypt for Password Hashing**
 
-### Error Handling:
+### ⚠️ Error Handling:
 - Proper error responses are implemented for:
   - Invalid credentials
   - User already exists
@@ -215,7 +217,7 @@ or
   - Invalid password reset tokens
   - Password mismatch during reset
 
-### Example Error Response:
+### 🛑 Example Error Response:
 ```json
 {
   "error": "Invalid credentials",
@@ -225,7 +227,7 @@ or
 
 ---
 
-## 5. Security Considerations
+## 🔒 5. Security Considerations
 
 - Use a strong **JWT secret key** and do not expose it publicly.
 - Use **HTTPS** in production to secure API requests.
@@ -235,7 +237,7 @@ or
 
 ---
 
-## 6. Tools Used
+## 🛠️ 6. Tools Used
 
 - **Spring Boot** for application development
 - **JWT** for authentication
@@ -245,11 +247,11 @@ or
 
 ---
 
-## 7. Contact
+## 📬 7. Contact
 For queries, issues, or suggestions, contact me at:
 - **Email**: `maduhansadilshan@gmail.com`
 - **GitHub**: [sandaru-sdm](https://github.com/sandaru-sdm)
 
 ---
 
-**Happy Coding!** ✨
+**Happy Coding!** ✨🚀
